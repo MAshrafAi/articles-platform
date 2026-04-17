@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(supabase --version)",
+      "Bash(supabase init *)",
+      "Bash(export SUPABASE_ACCESS_TOKEN='sbp_31739ab6006cbf4d12714eb6f562be0d228a4de6')",
+      "Bash(supabase projects *)",
+      "Bash(supabase link *)",
+      "Bash(npm -v)",
+      "Bash(npm install *)",
+      "Bash(npx next *)",
+      "Bash(npx shadcn@latest add button input label card dialog form table dropdown-menu avatar badge separator alert select skeleton --yes --overwrite)",
+      "Bash(npx tsc *)",
+      "Bash(npm run *)",
+      "Bash(npx supabase *)",
+      "Bash(curl -sS -o /dev/null -w \"%{http_code}\" http://localhost:3000/login)",
+      "Bash(lsof -iTCP:3000 -sTCP:LISTEN)",
+      "Bash(npm i *)",
+      "Bash(npx shadcn@latest add popover calendar toggle -y)"
+    ]
+  }
+}
