@@ -16,14 +16,14 @@ export function StatsBar({ totalCount, range, firstArticleDate }: StatsBarProps)
       <StatCard
         icon={<FileText className="h-5 w-5" />}
         label="إجمالي المقالات"
-        value={totalCount.toLocaleString("ar-EG")}
+        value={totalCount.toLocaleString("en-US")}
         sub="في النطاق المحدد"
         accent="slate"
       />
       <StatCard
         icon={<TrendingUp className="h-5 w-5" />}
         label="معدل النشر اليومي"
-        value={dailyAvg < 1 && dailyAvg > 0 ? dailyAvg.toFixed(2) : Math.round(dailyAvg).toLocaleString("ar-EG")}
+        value={dailyAvg < 1 && dailyAvg > 0 ? dailyAvg.toFixed(2) : Math.round(dailyAvg).toLocaleString("en-US")}
         sub={`متوسط خلال ${days} يوم`}
         accent="emerald"
       />

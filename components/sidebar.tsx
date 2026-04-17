@@ -8,6 +8,7 @@ import {
   FileText,
   LayoutDashboard,
   Settings,
+  ScrollText,
   ShieldCheck,
   type LucideIcon,
 } from "lucide-react";
@@ -55,6 +56,11 @@ export function Sidebar({ user }: SidebarProps) {
       label: "أدوار المنصة",
       href: "/settings/roles",
       icon: ShieldCheck,
+    });
+    settingsChildren.push({
+      label: "سجل المقالات",
+      href: "/settings/logs",
+      icon: ScrollText,
     });
   }
 

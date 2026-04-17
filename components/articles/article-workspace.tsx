@@ -55,6 +55,7 @@ export function ArticleWorkspace({
   const [isSaving, setIsSaving] = useState(false);
   const [savedAt, setSavedAt] = useState<string>(article.updated_at);
   const [contentVersion, setContentVersion] = useState(0);
+  const [wordCount, setWordCount] = useState(0);
 
   // Snapshot of last-saved state (compared against for dirty check)
   const savedTitleRef = useRef<string>(article.title ?? "");
@@ -93,9 +94,15 @@ export function ArticleWorkspace({
           "prose prose-slate max-w-none min-h-[420px] px-8 py-10 focus:outline-none",
       },
     },
+    onCreate: ({ editor }) => {
+      const text = editor.getText();
+      setWordCount(text.trim() ? text.trim().split(/\s+/).length : 0);
+    },
     onUpdate: ({ editor }) => {
       latestContentRef.current = editor.getJSON();
       setContentVersion((v) => v + 1);
+      const text = editor.getText();
+      setWordCount(text.trim() ? text.trim().split(/\s+/).length : 0);
     },
   });
 
@@ -220,12 +227,13 @@ export function ArticleWorkspace({
           className="mb-4 w-full border-0 bg-transparent px-0 text-3xl font-bold text-slate-900 placeholder:text-slate-300 focus:outline-none focus:ring-0 disabled:opacity-70"
         />
 
-        {/* Save status */}
+        {/* Save status + word count */}
         <StatusIndicator
           canEdit={canEdit}
           isSaving={isSaving}
           isDirty={isDirty}
           savedAt={savedAt}
+          wordCount={wordCount}
         />
 
         {/* Toolbar */}
@@ -250,31 +258,45 @@ function StatusIndicator({
   isSaving,
   isDirty,
   savedAt,
+  wordCount,
 }: {
   canEdit: boolean;
   isSaving: boolean;
   isDirty: boolean;
   savedAt: string;
+  wordCount: number;
 }) {
-  if (!canEdit) return <div className="mb-4 h-5" />;
+  const wordCountDisplay = (
+    <span className="tabular-nums text-slate-400">
+      {wordCount.toLocaleString("en-US")} كلمة
+    </span>
+  );
 
-  let content: React.ReactNode;
+  if (!canEdit) {
+    return (
+      <div className="mb-4 flex h-5 items-center justify-end text-xs">
+        {wordCountDisplay}
+      </div>
+    );
+  }
+
+  let saveContent: React.ReactNode;
   if (isSaving) {
-    content = (
+    saveContent = (
       <>
         <Loader2 className="h-3 w-3 animate-spin text-slate-400" />
         <span>جارٍ الحفظ…</span>
       </>
     );
   } else if (isDirty) {
-    content = (
+    saveContent = (
       <>
         <span className="h-2 w-2 rounded-full bg-amber-500" />
         <span className="text-amber-600">يوجد تعديلات غير محفوظة</span>
       </>
     );
   } else {
-    content = (
+    saveContent = (
       <>
         <Check className="h-3 w-3 text-emerald-600" />
         <span>محفوظ — آخر تحديث {formatRelativeTime(savedAt)}</span>
@@ -283,8 +305,9 @@ function StatusIndicator({
   }
 
   return (
-    <div className="mb-4 flex items-center gap-2 text-xs text-slate-500">
-      {content}
+    <div className="mb-4 flex items-center justify-between text-xs text-slate-500">
+      <div className="flex items-center gap-2">{saveContent}</div>
+      {wordCountDisplay}
     </div>
   );
 }

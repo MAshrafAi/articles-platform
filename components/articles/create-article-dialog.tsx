@@ -6,7 +6,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { FileText, Package, Plus, ArrowRight, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { createInformationalArticleAction } from "@/app/(protected)/articles/actions";
+import {
+  createInformationalArticleAction,
+  createProductArticleAction,
+} from "@/app/(protected)/articles/actions";
 import {
   Dialog,
   DialogContent,
@@ -52,7 +55,17 @@ type InformationalFormValues = z.infer<typeof informationalSchema>;
 
 const productSchema = z.object({
   ...baseSchema,
-  productLinks: z.string().min(1, "هذا الحقل مطلوب"),
+  productLinks: z
+    .string()
+    .min(1, "هذا الحقل مطلوب")
+    .refine(
+      (val) =>
+        val
+          .split("\n")
+          .map((l) => l.trim())
+          .filter((l) => l.length > 0).length <= 5,
+      "الحد الأقصى 5 روابط منتجات"
+    ),
 });
 type ProductFormValues = z.infer<typeof productSchema>;
 
@@ -141,11 +154,30 @@ export function CreateArticleDialog() {
   };
 
   const onSubmitProduct = (data: ProductFormValues) => {
-    console.log("Product article request:", data);
-    toast.success("تم إرسال الطلب بنجاح", {
-      description: "سيتم معالجة طلب المقال وإعلامك عند الانتهاء",
+    startTransition(async () => {
+      const result = await createProductArticleAction({
+        KW: data.keywords,
+        title: data.title || undefined,
+        language: data.language,
+        audienceGender: data.audienceGender,
+        writingTone: data.writingTone,
+        productLinks: data.productLinks,
+        infoNotes: data.infoNotes || undefined,
+        outlineNotes: data.outlineNotes || undefined,
+        writingNotes: data.writingNotes || undefined,
+      });
+
+      if (result.ok) {
+        handleClose();
+        toast.success("تم استلام الطلب", {
+          description: "جاري توليد المقال في الخلفية، سيظهر في القائمة قريباً",
+        });
+      } else {
+        toast.error("تعذّر إنشاء المقال", {
+          description: result.error,
+        });
+      }
     });
-    handleClose();
   };
 
   return (
@@ -447,16 +479,19 @@ export function CreateArticleDialog() {
               <button
                 type="button"
                 onClick={() => setStep("type")}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
+                disabled={isPending}
+                className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 disabled:opacity-50"
               >
                 <ArrowRight className="h-4 w-4" />
                 رجوع
               </button>
               <button
                 type="submit"
-                className="rounded-lg bg-slate-900 px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-slate-800"
+                disabled={isPending}
+                className="inline-flex items-center gap-2 rounded-lg bg-slate-900 px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-slate-800 disabled:opacity-50"
               >
-                إرسال الطلب
+                {isPending && <Loader2 className="h-4 w-4 animate-spin" />}
+                {isPending ? "جاري الإرسال..." : "إرسال الطلب"}
               </button>
             </DialogFooter>
           </form>
