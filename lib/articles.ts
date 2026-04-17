@@ -2,6 +2,8 @@ import type { JSONContent } from "@tiptap/react";
 
 export type ArticleType = "product" | "informational";
 
+export type ArticleStatus = "generating" | "ready" | "error";
+
 export interface ArticleAuthor {
   id: string;
   full_name: string | null;
@@ -12,6 +14,7 @@ export interface ArticleListItem {
   id: string;
   title: string | null;
   type: ArticleType;
+  status: ArticleStatus;
   created_at: string;
   author: ArticleAuthor;
 }

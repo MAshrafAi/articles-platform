@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { FileText } from "lucide-react";
+import { FileText, Loader2, AlertCircle } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -49,21 +49,39 @@ export function ArticlesTable({
             const authorName =
               article.author.full_name?.trim() || article.author.email;
 
+            const isGenerating = article.status === "generating";
+            const isError = article.status === "error";
+
             return (
               <TableRow key={article.id} className="hover:bg-slate-50/50">
                 <TableCell className="font-medium">
-                  <Link
-                    href={`/articles/${article.id}`}
-                    className="text-slate-900 transition-colors hover:text-slate-600"
-                  >
-                    <span
-                      className={
-                        article.title ? "" : "italic text-slate-400"
-                      }
-                    >
-                      {displayTitle}
+                  {isGenerating ? (
+                    <span className="flex items-center gap-2 text-slate-400">
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      <span className="italic">{displayTitle}</span>
                     </span>
-                  </Link>
+                  ) : isError ? (
+                    <span className="flex items-center gap-2">
+                      <AlertCircle className="h-3.5 w-3.5 text-red-400" />
+                      <Link
+                        href={`/articles/${article.id}`}
+                        className="text-slate-900 transition-colors hover:text-slate-600"
+                      >
+                        <span className={article.title ? "" : "italic text-slate-400"}>
+                          {displayTitle}
+                        </span>
+                      </Link>
+                    </span>
+                  ) : (
+                    <Link
+                      href={`/articles/${article.id}`}
+                      className="text-slate-900 transition-colors hover:text-slate-600"
+                    >
+                      <span className={article.title ? "" : "italic text-slate-400"}>
+                        {displayTitle}
+                      </span>
+                    </Link>
+                  )}
                 </TableCell>
                 <TableCell>
                   <ArticleTypeBadge type={article.type} />

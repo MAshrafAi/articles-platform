@@ -34,7 +34,7 @@ export default async function ArticlesPage({
   let query = supabase
     .from("articles")
     .select(
-      `id, title, type, created_at,
+      `id, title, type, status, created_at,
        author:users!articles_author_id_fkey ( id, full_name, email )`
     );
 

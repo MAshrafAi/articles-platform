@@ -92,6 +92,7 @@ See [supabase/migrations/](supabase/migrations/) for the authoritative schema.
 - **shadcn/ui components** live in [components/ui/](components/ui/). App-specific components sit one level up in [components/](components/). Don't duplicate primitives — extend them.
 - **RTL gotchas**: `border-l` visually renders on the right in RTL. Use `ms-*`/`me-*` (logical) over `ml-*`/`mr-*` where possible. Dropdown/Dialog primitives need `dir="rtl"` on the **root** component, not on `Content`.
 - **Environment**: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY` in `.env.local`. Optional `NEXT_PUBLIC_SITE_URL` overrides the invite redirect base.
+- **Supabase MCP server**: configured in `.mcp.json`. Project ref is `szougpzfzklhmbqxlehr` — always use this ref when invoking MCP tools.
 
 ## Manual setup steps (outside this repo)
 
