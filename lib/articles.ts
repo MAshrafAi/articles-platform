@@ -48,7 +48,7 @@ export interface PipelineLogEntry {
 export const STEP_LABELS: Record<string, string> = {
   product_extraction: "استخراج المنتجات",
   research: "البحث وجمع المعلومات",
-  paa: "الأسئلة الشائعة من الناس",
+  paa: "تجميع الأسئلة الشائعة",
   outline: "إعداد المخطط",
   writing: "كتابة المقال",
 };

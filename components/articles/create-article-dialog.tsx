@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { FileText, Package, Plus, ArrowRight, Loader2 } from "lucide-react";
+import { FileText, Package, Plus, ArrowRight, Loader2, X, Link2 } from "lucide-react";
 import { toast } from "sonner";
 import {
   createInformationalArticleAction,
@@ -33,7 +33,7 @@ import type { ArticleType } from "@/lib/articles";
 // ─── Shared field styles ────────────────────────────────────────────────────────
 
 const fieldCls =
-  "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-slate-900 ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50";
+  "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-slate-900 ring-offset-background placeholder:text-[13px] placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50";
 
 const errorFieldCls = "border-red-400 focus:ring-red-400";
 
@@ -47,7 +47,6 @@ const baseSchema = {
   writingTone: z.string().min(1, "هذا الحقل مطلوب"),
   infoNotes: z.string().optional(),
   outlineNotes: z.string().optional(),
-  writingNotes: z.string().optional(),
 };
 
 const informationalSchema = z.object(baseSchema);
@@ -84,29 +83,27 @@ export function CreateArticleDialog() {
   const informationalForm = useForm<InformationalFormValues>({
     resolver: zodResolver(informationalSchema),
     defaultValues: {
-      language: "",
+      language: "ar",
       keywords: "",
       title: "",
-      audienceGender: "",
-      writingTone: "",
+      audienceGender: "neutral",
+      writingTone: "neutral",
       infoNotes: "",
       outlineNotes: "",
-      writingNotes: "",
     },
   });
 
   const productForm = useForm<ProductFormValues>({
     resolver: zodResolver(productSchema),
     defaultValues: {
-      language: "",
+      language: "ar",
       keywords: "",
       title: "",
       productLinks: "",
-      audienceGender: "",
-      writingTone: "",
+      audienceGender: "neutral",
+      writingTone: "neutral",
       infoNotes: "",
       outlineNotes: "",
-      writingNotes: "",
     },
   });
 
@@ -137,7 +134,6 @@ export function CreateArticleDialog() {
         writingTone: data.writingTone,
         infoNotes: data.infoNotes || undefined,
         outlineNotes: data.outlineNotes || undefined,
-        writingNotes: data.writingNotes || undefined,
       });
 
       if (result.ok) {
@@ -164,7 +160,6 @@ export function CreateArticleDialog() {
         productLinks: data.productLinks,
         infoNotes: data.infoNotes || undefined,
         outlineNotes: data.outlineNotes || undefined,
-        writingNotes: data.writingNotes || undefined,
       });
 
       if (result.ok) {
@@ -286,9 +281,10 @@ export function CreateArticleDialog() {
                 </FormField>
               </div>
 
-              <FormField label="الكلمات المفتاحية" required error={informationalForm.formState.errors.keywords?.message}>
+              <FormField label="الكلمة المفتاحية" required error={informationalForm.formState.errors.keywords?.message}>
                 <input
                   {...informationalForm.register("keywords")}
+                  placeholder="أدخل الكلمة المفتاحية الرئيسية للمقال"
                   className={cn(fieldCls, informationalForm.formState.errors.keywords && errorFieldCls)}
                 />
               </FormField>
@@ -314,13 +310,15 @@ export function CreateArticleDialog() {
               <FormField label="عنوان المقال">
                 <input
                   {...informationalForm.register("title")}
+                  placeholder="أدخل عنوان المقال أو اتركه ليتم توليده تلقائياً"
                   className={fieldCls}
                 />
               </FormField>
 
-              <FormField label="ملاحظات المعلومات">
+              <FormField label="محاور إضافية للمقال">
                 <textarea
                   {...informationalForm.register("infoNotes")}
+                  placeholder="أدخل أي توجيهات أو محاور تريد تضمينها في المقال"
                   rows={3}
                   className={cn(fieldCls, "h-auto resize-none")}
                 />
@@ -329,14 +327,7 @@ export function CreateArticleDialog() {
               <FormField label="ملاحظات المخطط">
                 <textarea
                   {...informationalForm.register("outlineNotes")}
-                  rows={3}
-                  className={cn(fieldCls, "h-auto resize-none")}
-                />
-              </FormField>
-
-              <FormField label="ملاحظات الكتابة">
-                <textarea
-                  {...informationalForm.register("writingNotes")}
+                  placeholder="أدخل ملاحظات خاصة بهيكل المقال وترتيب أقسامه"
                   rows={3}
                   className={cn(fieldCls, "h-auto resize-none")}
                 />
@@ -410,9 +401,10 @@ export function CreateArticleDialog() {
                 </FormField>
               </div>
 
-              <FormField label="الكلمات المفتاحية" required error={productForm.formState.errors.keywords?.message}>
+              <FormField label="الكلمة المفتاحية" required error={productForm.formState.errors.keywords?.message}>
                 <input
                   {...productForm.register("keywords")}
+                  placeholder="أدخل الكلمة المفتاحية الرئيسية للمقال"
                   className={cn(fieldCls, productForm.formState.errors.keywords && errorFieldCls)}
                 />
               </FormField>
@@ -438,21 +430,23 @@ export function CreateArticleDialog() {
               <FormField label="عنوان المقال">
                 <input
                   {...productForm.register("title")}
+                  placeholder="أدخل عنوان المقال أو اتركه ليتم توليده تلقائياً"
                   className={fieldCls}
                 />
               </FormField>
 
               <FormField label="روابط المنتجات" required error={productForm.formState.errors.productLinks?.message}>
-                <textarea
-                  {...productForm.register("productLinks")}
-                  rows={3}
-                  className={cn(fieldCls, "h-auto resize-none", productForm.formState.errors.productLinks && errorFieldCls)}
+                <ProductLinksInput
+                  value={productForm.watch("productLinks")}
+                  onChange={(val) => productForm.setValue("productLinks", val, { shouldValidate: true })}
+                  hasError={!!productForm.formState.errors.productLinks}
                 />
               </FormField>
 
-              <FormField label="ملاحظات المعلومات">
+              <FormField label="محاور إضافية للمقال">
                 <textarea
                   {...productForm.register("infoNotes")}
+                  placeholder="أدخل أي توجيهات أو محاور تريد تضمينها في المقال"
                   rows={3}
                   className={cn(fieldCls, "h-auto resize-none")}
                 />
@@ -461,14 +455,7 @@ export function CreateArticleDialog() {
               <FormField label="ملاحظات المخطط">
                 <textarea
                   {...productForm.register("outlineNotes")}
-                  rows={3}
-                  className={cn(fieldCls, "h-auto resize-none")}
-                />
-              </FormField>
-
-              <FormField label="ملاحظات الكتابة">
-                <textarea
-                  {...productForm.register("writingNotes")}
+                  placeholder="أدخل ملاحظات خاصة بهيكل المقال وترتيب أقسامه"
                   rows={3}
                   className={cn(fieldCls, "h-auto resize-none")}
                 />
@@ -561,5 +548,134 @@ function TypeOption({ icon, title, description, selected, onSelect }: TypeOption
         <p className="mt-1 text-xs leading-relaxed text-slate-500">{description}</p>
       </div>
     </button>
+  );
+}
+
+// ─── ProductLinksInput ────────────────────────────────────────────────────────
+
+function shortenUrl(url: string): string {
+  try {
+    const parsed = new URL(url);
+    return parsed.hostname + (parsed.pathname.length > 1 ? "/…" : "");
+  } catch {
+    return url.length > 40 ? url.slice(0, 40) + "…" : url;
+  }
+}
+
+function ProductLinksInput({
+  value,
+  onChange,
+  hasError,
+}: {
+  value: string;
+  onChange: (val: string) => void;
+  hasError: boolean;
+}) {
+  const [inputValue, setInputValue] = useState("");
+
+  const links = value
+    .split("\n")
+    .map((l) => l.trim())
+    .filter((l) => l.length > 0);
+
+  const addLink = useCallback(
+    (raw: string) => {
+      const trimmed = raw.trim();
+      if (!trimmed) return;
+      // Support pasting multiple links at once
+      const newLinks = trimmed
+        .split("\n")
+        .map((l) => l.trim())
+        .filter((l) => l.length > 0 && !links.includes(l));
+      if (newLinks.length === 0) return;
+      const updated = [...links, ...newLinks].join("\n");
+      onChange(updated);
+      setInputValue("");
+    },
+    [links, onChange]
+  );
+
+  const removeLink = useCallback(
+    (index: number) => {
+      const updated = links.filter((_, i) => i !== index).join("\n");
+      onChange(updated);
+    },
+    [links, onChange]
+  );
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      addLink(inputValue);
+    }
+  };
+
+  const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    const pasted = e.clipboardData.getData("text");
+    if (pasted.includes("\n")) {
+      e.preventDefault();
+      addLink(pasted);
+    }
+  };
+
+  const isFull = links.length >= 5;
+
+  return (
+    <div
+      className={cn(
+        "rounded-md border bg-background p-2 transition-colors focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2",
+        hasError ? "border-red-400" : "border-input"
+      )}
+    >
+      {/* Links list */}
+      {links.length > 0 && (
+        <div className="mb-2 flex flex-col gap-1.5">
+          {links.map((link, i) => (
+            <div
+              key={i}
+              className="flex items-center gap-2 rounded-lg bg-slate-50 px-3 py-1.5"
+            >
+              <Link2 className="h-3.5 w-3.5 shrink-0 text-slate-400" />
+              <span
+                className="flex-1 truncate text-xs text-slate-600"
+                title={link}
+              >
+                {shortenUrl(link)}
+              </span>
+              <button
+                type="button"
+                onClick={() => removeLink(i)}
+                className="shrink-0 rounded p-0.5 text-slate-400 transition-colors hover:bg-slate-200 hover:text-slate-700"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Input */}
+      {!isFull && (
+        <input
+          type="text"
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+          onKeyDown={handleKeyDown}
+          onPaste={handlePaste}
+          placeholder={
+            links.length === 0
+              ? "أدخل رابط المنتج ثم اضغط Enter"
+              : `أضف رابط آخر (${links.length}/5)`
+          }
+          className="w-full border-0 bg-transparent px-1 py-1 text-sm text-slate-900 placeholder:text-[13px] placeholder:text-muted-foreground focus:outline-none"
+        />
+      )}
+
+      {isFull && (
+        <p className="px-1 py-1 text-xs text-slate-400">
+          تم الوصول للحد الأقصى (5 روابط)
+        </p>
+      )}
+    </div>
   );
 }
