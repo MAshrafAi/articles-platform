@@ -17,11 +17,12 @@
       "Bash(lsof -iTCP:3000 -sTCP:LISTEN)",
       "Bash(npm i *)",
       "Bash(npx shadcn@latest add popover calendar toggle -y)",
-      "Bash(npx skills *)"
+      "Bash(npx skills *)",
+      "Bash(npx wrangler *)"
     ]
   },
+  "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
     "supabase"
-  ],
-  "enableAllProjectMcpServers": true
+  ]
 }
