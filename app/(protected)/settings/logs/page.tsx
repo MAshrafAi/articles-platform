@@ -3,6 +3,7 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
 import type { ArticleLogItem, ArticleStatus, ArticleType } from "@/lib/articles";
 import type { ProductLogItem } from "@/lib/products";
 import { LogsPageClient } from "@/components/logs/logs-page-client";
+import { RealtimeListener } from "@/components/realtime-listener";
 
 export const dynamic = "force-dynamic";
 
@@ -63,6 +64,7 @@ export default async function LogsPage({
 
   return (
     <div className="mx-auto max-w-6xl px-8 py-10">
+      <RealtimeListener tables={["articles", "products"]} />
       <header className="mb-8">
         <h1 className="text-2xl font-semibold text-slate-900">السجل</h1>
         <p className="mt-1 text-sm text-slate-500">

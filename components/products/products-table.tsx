@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useTransition } from "react";
-import { ShoppingBag, Loader2, AlertCircle, Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState, useTransition } from "react";
+import { ShoppingBag, Loader2, AlertCircle, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import {
   Table,
@@ -12,6 +13,20 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { formatDate } from "@/lib/formatters";
 import type { ProductListItem } from "@/lib/products";
 import type { UserRole } from "@/lib/auth";
@@ -101,7 +116,7 @@ export function ProductsTable({
                 </TableCell>
                 <TableCell>
                   {canDelete && (
-                    <DeleteButton
+                    <ProductRowActions
                       productId={product.id}
                       productTitle={displayTitle}
                     />
@@ -116,39 +131,93 @@ export function ProductsTable({
   );
 }
 
-function DeleteButton({
+function ProductRowActions({
   productId,
   productTitle,
 }: {
   productId: string;
   productTitle: string;
 }) {
-  const [isPending, startTransition] = useTransition();
+  const router = useRouter();
+  const [open, setOpen] = useState(false);
+  const [pending, startTransition] = useTransition();
 
   const handleDelete = () => {
-    if (!confirm(`هل تريد حذف "${productTitle}"؟`)) return;
     startTransition(async () => {
       const result = await deleteProductAction({ productId });
-      if (!result.ok) {
+      if (result.ok) {
+        toast.success("تم حذف المنتج");
+        setOpen(false);
+      } else {
         toast.error(result.error);
       }
     });
   };
 
   return (
-    <button
-      type="button"
-      onClick={handleDelete}
-      disabled={isPending}
-      className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-red-50 hover:text-red-600 disabled:opacity-50"
-      title="حذف"
-    >
-      {isPending ? (
-        <Loader2 className="h-4 w-4 animate-spin" />
-      ) : (
-        <Trash2 className="h-4 w-4" />
-      )}
-    </button>
+    <>
+      <DropdownMenu dir="rtl">
+        <DropdownMenuTrigger asChild>
+          <button
+            type="button"
+            className="flex h-8 w-8 items-center justify-center rounded-md text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900"
+            aria-label="قائمة الأوامر"
+          >
+            <MoreHorizontal className="h-4 w-4" />
+          </button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-44">
+          <DropdownMenuItem
+            onClick={() => router.push(`/products/${productId}`)}
+          >
+            <Pencil className="ms-2 h-4 w-4" />
+            تعديل المنتج
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => setOpen(true)}
+            className="text-red-600 focus:bg-red-50 focus:text-red-700"
+          >
+            <Trash2 className="ms-2 h-4 w-4" />
+            حذف المنتج
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      <Dialog
+        open={open}
+        onOpenChange={(next) => !pending && setOpen(next)}
+      >
+        <DialogContent dir="rtl" className="sm:max-w-md">
+          <DialogHeader className="text-start sm:text-start">
+            <DialogTitle>تأكيد حذف المنتج</DialogTitle>
+            <DialogDescription>
+              سيتم حذف{" "}
+              <span className="font-medium text-slate-700">{productTitle}</span>{" "}
+              نهائياً. هذا الإجراء لا يمكن التراجع عنه.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:gap-2">
+            <button
+              type="button"
+              onClick={() => setOpen(false)}
+              disabled={pending}
+              className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 disabled:opacity-50"
+            >
+              إلغاء
+            </button>
+            <button
+              type="button"
+              onClick={handleDelete}
+              disabled={pending}
+              className="inline-flex items-center justify-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-700 disabled:opacity-50"
+            >
+              {pending && <Loader2 className="h-4 w-4 animate-spin" />}
+              تأكيد الحذف
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
 

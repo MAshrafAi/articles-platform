@@ -7,6 +7,7 @@ import { StatsBar } from "@/components/articles/stats-bar";
 import { ArticlesFilters } from "@/components/articles/articles-filters";
 import { ArticlesTable } from "@/components/articles/articles-table";
 import { CreateArticleDialog } from "@/components/articles/create-article-dialog";
+import { RealtimeListener } from "@/components/realtime-listener";
 
 export const dynamic = "force-dynamic";
 
@@ -76,6 +77,7 @@ export default async function ArticlesPage({
 
   return (
     <div className="mx-auto max-w-6xl px-8 py-10">
+      <RealtimeListener tables={["articles"]} />
       <header className="mb-8 flex items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold text-slate-900">المقالات</h1>

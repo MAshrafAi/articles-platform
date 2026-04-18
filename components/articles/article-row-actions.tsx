@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
-import { Loader2, MoreHorizontal, Trash2 } from "lucide-react";
+import { Loader2, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 import {
@@ -67,6 +67,12 @@ export function ArticleRowActions({
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-44">
+            <DropdownMenuItem
+              onClick={() => router.push(`/articles/${articleId}`)}
+            >
+              <Pencil className="ms-2 h-4 w-4" />
+              تعديل المقال
+            </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => setOpen(true)}
               className="text-red-600 focus:bg-red-50 focus:text-red-700"

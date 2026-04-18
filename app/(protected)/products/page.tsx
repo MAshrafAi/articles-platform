@@ -2,9 +2,11 @@ import { requireUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import type { ProductListItem } from "@/lib/products";
+import { ProductsStatsBar } from "@/components/products/stats-bar";
 import { ProductsFilters } from "@/components/products/products-filters";
 import { ProductsTable } from "@/components/products/products-table";
 import { CreateProductDialog } from "@/components/products/create-product-dialog";
+import { RealtimeListener } from "@/components/realtime-listener";
 
 export const dynamic = "force-dynamic";
 
@@ -50,8 +52,22 @@ export default async function ProductsPage({
     authorsList = data ?? [];
   }
 
+  // For stats: calculate days since first product
+  let totalDays = 1;
+  const { data: firstRows } = await supabase
+    .from("products")
+    .select("created_at")
+    .order("created_at", { ascending: true })
+    .limit(1);
+  if (firstRows?.[0]?.created_at) {
+    const firstDate = new Date(firstRows[0].created_at);
+    const now = new Date();
+    totalDays = Math.max(1, Math.ceil((now.getTime() - firstDate.getTime()) / (1000 * 60 * 60 * 24)));
+  }
+
   return (
     <div className="mx-auto max-w-6xl px-8 py-10">
+      <RealtimeListener tables={["products"]} />
       <header className="mb-8 flex items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold text-slate-900">المنتجات</h1>
@@ -63,6 +79,8 @@ export default async function ProductsPage({
         </div>
         <CreateProductDialog />
       </header>
+
+      <ProductsStatsBar totalCount={products.length} totalDays={totalDays} />
 
       <ProductsFilters
         showAuthorFilter={current.role === "admin"}
