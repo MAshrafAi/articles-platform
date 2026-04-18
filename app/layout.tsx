@@ -11,7 +11,7 @@ const plexArabic = IBM_Plex_Sans_Arabic({
 });
 
 export const metadata: Metadata = {
-  title: "منصة المقالات",
+  title: "منصة محتوى",
   description: "منصة داخلية لإدارة وتوليد المقالات",
 };
 

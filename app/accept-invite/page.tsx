@@ -42,7 +42,7 @@ export default async function AcceptInvitePage() {
               إكمال إنشاء الحساب
             </h1>
             <p className="mt-2 text-sm text-slate-500">
-              مرحبًا بك في منصة المقالات — يُرجى تعيين كلمة السر لإكمال التسجيل
+              مرحبًا بك في منصة محتوى — يُرجى تعيين كلمة السر لإكمال التسجيل
             </p>
           </div>
 

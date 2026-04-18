@@ -16,7 +16,7 @@ export default function LoginPage() {
               <span className="text-xl font-bold text-white">م</span>
             </div>
             <h1 className="text-2xl font-semibold text-slate-900">
-              منصة المقالات
+              منصة محتوى
             </h1>
             <p className="mt-2 text-sm text-slate-500">
               سجّل الدخول للوصول إلى لوحة التحكم

@@ -71,7 +71,7 @@ export function Sidebar({ user }: SidebarProps) {
           <span className="text-base font-bold text-white">م</span>
         </div>
         <div>
-          <p className="text-sm font-semibold text-slate-900">منصة المقالات</p>
+          <p className="text-sm font-semibold text-slate-900">منصة محتوى</p>
           <p className="text-xs text-slate-500">لوحة الإدارة</p>
         </div>
       </div>
