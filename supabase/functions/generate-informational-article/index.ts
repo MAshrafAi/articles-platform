@@ -217,7 +217,7 @@ Deno.serve(async (req: Request) => {
     const [queriesRaw, paaItems] = await Promise.all([
       openAIChat(
         OPENAI_KEY,
-        "gpt-4.1",
+        "gpt-5-chat-latest",
         [
           { role: "system", content: SEARCH_QUERIES_SYSTEM },
           {
@@ -280,7 +280,7 @@ Deno.serve(async (req: Request) => {
 
     const writtenSections = await Promise.all(
       sections.map((section) =>
-        openAIChat(OPENAI_KEY, "gpt-4.1", [
+        openAIChat(OPENAI_KEY, "gpt-5-chat-latest", [
           {
             role: "system",
             content: `${writerSystem}\n\nTone instruction: ${toneInstruction}`,

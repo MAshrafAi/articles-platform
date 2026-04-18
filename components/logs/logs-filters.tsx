@@ -19,9 +19,10 @@ interface AuthorOption {
 
 interface LogsFiltersProps {
   authorsList: AuthorOption[];
+  showTypeFilter?: boolean;
 }
 
-export function LogsFilters({ authorsList }: LogsFiltersProps) {
+export function LogsFilters({ authorsList, showTypeFilter = true }: LogsFiltersProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -63,22 +64,24 @@ export function LogsFilters({ authorsList }: LogsFiltersProps) {
         </SelectContent>
       </Select>
 
-      {/* Type filter */}
-      <Select
-        value={searchParams.get("type") ?? "all"}
-        onValueChange={(v) =>
-          updateParams({ type: v === "all" ? null : v })
-        }
-      >
-        <SelectTrigger dir="rtl" className="w-[150px]">
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent dir="rtl">
-          <SelectItem value="all">كل الأنواع</SelectItem>
-          <SelectItem value="informational">مقال معلوماتي</SelectItem>
-          <SelectItem value="product">مقال منتج</SelectItem>
-        </SelectContent>
-      </Select>
+      {/* Type filter (articles only) */}
+      {showTypeFilter && (
+        <Select
+          value={searchParams.get("type") ?? "all"}
+          onValueChange={(v) =>
+            updateParams({ type: v === "all" ? null : v })
+          }
+        >
+          <SelectTrigger dir="rtl" className="w-[150px]">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent dir="rtl">
+            <SelectItem value="all">كل الأنواع</SelectItem>
+            <SelectItem value="informational">مقال معلوماتي</SelectItem>
+            <SelectItem value="product">مقال منتج</SelectItem>
+          </SelectContent>
+        </Select>
+      )}
 
       {/* Author filter */}
       <Select

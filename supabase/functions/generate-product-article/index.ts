@@ -338,7 +338,7 @@ Deno.serve(async (req: Request) => {
           // Upload to Supabase Storage
           const storagePath = `${articleId}/${index}.jpeg`;
           const { error: uploadError } = await supabase.storage
-            .from("product-screenshots")
+            .from("articles-screenshots")
             .upload(storagePath, screenshotBuffer, {
               contentType: "image/jpeg",
               upsert: true,
@@ -349,7 +349,7 @@ Deno.serve(async (req: Request) => {
           } else {
             // Get signed URL
             const { data: signedUrlData } = await supabase.storage
-              .from("product-screenshots")
+              .from("articles-screenshots")
               .createSignedUrl(storagePath, 3600);
 
             if (signedUrlData?.signedUrl) {
@@ -385,7 +385,7 @@ Deno.serve(async (req: Request) => {
     const [queriesRaw, paaItems] = await Promise.all([
       openAIChat(
         OPENAI_KEY,
-        "gpt-4.1",
+        "gpt-5-chat-latest",
         [
           { role: "system", content: PRODUCT_SEARCH_QUERIES_SYSTEM },
           {
@@ -448,7 +448,7 @@ Deno.serve(async (req: Request) => {
 
     const writtenSections = await Promise.all(
       sections.map((section) =>
-        openAIChat(OPENAI_KEY, "gpt-4.1", [
+        openAIChat(OPENAI_KEY, "gpt-5-chat-latest", [
           {
             role: "system",
             content: `${writerSystem}\n\nTone instruction: ${toneInstruction}`,
