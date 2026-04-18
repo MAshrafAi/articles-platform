@@ -1,0 +1,2 @@
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('product-images', 'product-images', false);

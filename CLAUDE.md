@@ -19,6 +19,7 @@ npm run typecheck  # tsc --noEmit — run this before declaring work done
 
 npx supabase db push       # apply pending migrations to the linked remote project
 npx supabase migration new <name>   # scaffold a new migration file
+npx supabase functions deploy <name> --no-verify-jwt --project-ref szougpzfzklhmbqxlehr  # deploy edge function (ALWAYS use --no-verify-jwt)
 ```
 
 There is no test suite yet. Verify changes with `npm run typecheck` + `npm run build` + manual browser testing.
@@ -91,7 +92,9 @@ See [supabase/migrations/](supabase/migrations/) for the authoritative schema.
 - **Server Actions over API routes** for mutations (see `*/actions.ts` files). Use `revalidatePath` after writes.
 - **shadcn/ui components** live in [components/ui/](components/ui/). App-specific components sit one level up in [components/](components/). Don't duplicate primitives — extend them.
 - **RTL gotchas**: `border-l` visually renders on the right in RTL. Use `ms-*`/`me-*` (logical) over `ml-*`/`mr-*` where possible. Dropdown/Dialog primitives need `dir="rtl"` on the **root** component, not on `Content`.
+- **Edge Functions**: always deploy with `--no-verify-jwt`. All functions handle their own auth (service role key, API keys, webhooks) — Supabase's built-in JWT gate is not used.
 - **Environment**: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY` in `.env.local`. Optional `NEXT_PUBLIC_SITE_URL` overrides the invite redirect base.
+- **Supabase MCP server**: configured in `.mcp.json`. Project ref is `szougpzfzklhmbqxlehr` — always use this ref when invoking MCP tools.
 
 ## Manual setup steps (outside this repo)
 
@@ -117,4 +120,6 @@ These are one-time and live in Supabase Studio:
 - 2026-04-16 — Moved full-name entry from invite to acceptance: admin's invite dialog now only accepts email + role; `full_name` is **required** on `/accept-invite` and saved to `public.users` by `acceptInviteAction`. Avoids name-conflict when invitee prefers a different name than what the admin guessed. (auth/invite flow)
 - 2026-04-16 — Hardened invite action error handling: `inviteUserAction` now logs Supabase errors and returns specific Arabic messages for rate-limit (`over_email_send_rate_limit`), SMTP failures, and duplicate emails — instead of a single generic fallback. (auth/invite flow)
 - 2026-04-16 — Rebuilt invite acceptance: `/auth/callback` is now a client page handling both PKCE code and implicit-flow hash tokens; `/accept-invite` shows email locked (display-only) and verifies it against `public.users` in both the page and server action. Login page now surfaces Arabic errors for `invalid_link` and `invalid_invite`. (auth/invite flow)
+- 2026-04-17 — **Product article generation wired up**. New Edge Function `generate-product-article` with full pipeline: product link scraping (DataForSEO content_parsing), screenshots (APIFlash → Supabase Storage `articles-screenshots` bucket), OpenAI Vision analysis (gpt-4o), then search queries + Perplexity research + outline + parallel section writing (same flow as informational but with product-specific prompts). New prompt files: `product-search-queries.ts`, `product-outline.ts`, `product-vision.ts`. New server action `createProductArticleAction`. Product form UI now functional with 5-link max validation. New migration: `20260417000004_product_screenshots_bucket.sql`. New env var required: `APIFLASH_KEY`. (articles/product)
+- 2026-04-17 — Refactored `actions.ts`: extracted `fireEdgeFunction` helper used by both informational and product article creation actions. (articles)
 - 2026-04-16 — Phase 1 shipped: auth, RTL sidebar, roles page with invite/change-role/delete, Arabic invite email template, migrations applied to remote Supabase

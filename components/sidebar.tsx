@@ -8,7 +8,9 @@ import {
   FileText,
   LayoutDashboard,
   Settings,
+  ScrollText,
   ShieldCheck,
+  ShoppingBag,
   type LucideIcon,
 } from "lucide-react";
 
@@ -49,12 +51,23 @@ export function Sidebar({ user }: SidebarProps) {
     icon: FileText,
   };
 
+  const products: NavLeaf = {
+    label: "المنتجات",
+    href: "/products",
+    icon: ShoppingBag,
+  };
+
   const settingsChildren: NavLeaf[] = [];
   if (isAdmin) {
     settingsChildren.push({
       label: "أدوار المنصة",
       href: "/settings/roles",
       icon: ShieldCheck,
+    });
+    settingsChildren.push({
+      label: "السجل",
+      href: "/settings/logs",
+      icon: ScrollText,
     });
   }
 
@@ -75,6 +88,10 @@ export function Sidebar({ user }: SidebarProps) {
         <NavLink
           item={articles}
           active={pathname === articles.href || pathname.startsWith("/articles/")}
+        />
+        <NavLink
+          item={products}
+          active={pathname === products.href || pathname.startsWith("/products/")}
         />
 
         {settingsChildren.length > 0 && (
