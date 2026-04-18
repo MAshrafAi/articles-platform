@@ -63,7 +63,7 @@ export async function updateSession(request: NextRequest) {
     const isAdminPath = ADMIN_PATHS.some((p) => pathname.startsWith(p));
     if (isAdminPath && profile.role !== "admin") {
       const url = request.nextUrl.clone();
-      url.pathname = "/dashboard";
+      url.pathname = "/articles";
       url.search = "?error=forbidden";
       return NextResponse.redirect(url);
     }
@@ -71,7 +71,7 @@ export async function updateSession(request: NextRequest) {
 
   if (user && pathname === "/login") {
     const url = request.nextUrl.clone();
-    url.pathname = "/dashboard";
+    url.pathname = "/articles";
     url.search = "";
     return NextResponse.redirect(url);
   }

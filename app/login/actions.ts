@@ -35,5 +35,5 @@ export async function signInAction(
     return { error: "ليس لديك صلاحية الدخول إلى المنصة" };
   }
 
-  redirect("/dashboard");
+  redirect("/articles");
 }

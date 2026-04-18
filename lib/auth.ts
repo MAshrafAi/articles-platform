@@ -36,6 +36,6 @@ export async function requireUser(): Promise<AppUser> {
 
 export async function requireAdmin(): Promise<AppUser> {
   const user = await requireUser();
-  if (user.role !== "admin") redirect("/dashboard?error=forbidden");
+  if (user.role !== "admin") redirect("/articles?error=forbidden");
   return user;
 }

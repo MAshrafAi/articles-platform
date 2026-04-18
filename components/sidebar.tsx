@@ -6,7 +6,6 @@ import { useState } from "react";
 import {
   ChevronDown,
   FileText,
-  LayoutDashboard,
   Settings,
   ScrollText,
   ShieldCheck,
@@ -38,12 +37,6 @@ interface SidebarProps {
 export function Sidebar({ user }: SidebarProps) {
   const pathname = usePathname();
   const isAdmin = user.role === "admin";
-
-  const dashboard: NavLeaf = {
-    label: "لوحة التحكم",
-    href: "/dashboard",
-    icon: LayoutDashboard,
-  };
 
   const articles: NavLeaf = {
     label: "المقالات",
@@ -84,7 +77,6 @@ export function Sidebar({ user }: SidebarProps) {
       </div>
 
       <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4">
-        <NavLink item={dashboard} active={pathname === dashboard.href} />
         <NavLink
           item={articles}
           active={pathname === articles.href || pathname.startsWith("/articles/")}

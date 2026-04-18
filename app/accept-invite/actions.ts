@@ -59,5 +59,5 @@ export async function acceptInviteAction(
     return { error: "تعذر حفظ الاسم، حاول مرة أخرى" };
   }
 
-  redirect("/dashboard");
+  redirect("/articles");
 }

@@ -8,6 +8,8 @@ import { ArticlesFilters } from "@/components/articles/articles-filters";
 import { ArticlesTable } from "@/components/articles/articles-table";
 import { CreateArticleDialog } from "@/components/articles/create-article-dialog";
 import { RealtimeListener } from "@/components/realtime-listener";
+import { AlertTriangle } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export const dynamic = "force-dynamic";
 
@@ -18,6 +20,7 @@ interface SearchParams {
   q?: string;
   author?: string;
   sort?: "asc" | "desc";
+  error?: string;
 }
 
 export default async function ArticlesPage({
@@ -78,6 +81,15 @@ export default async function ArticlesPage({
   return (
     <div className="mx-auto max-w-6xl px-8 py-10">
       <RealtimeListener tables={["articles"]} />
+      {params.error === "forbidden" && (
+        <Alert className="mb-6 border-amber-200 bg-amber-50 text-amber-900">
+          <AlertTriangle className="h-4 w-4 text-amber-600" />
+          <AlertDescription>
+            ليس لديك صلاحية للوصول إلى تلك الصفحة
+          </AlertDescription>
+        </Alert>
+      )}
+
       <header className="mb-8 flex items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold text-slate-900">المقالات</h1>
