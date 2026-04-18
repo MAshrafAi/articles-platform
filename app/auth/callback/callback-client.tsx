@@ -1,11 +1,10 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 export function CallbackClient() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const ran = useRef(false);
 
@@ -20,11 +19,12 @@ export function CallbackClient() {
     const supabase = createClient();
 
     const finish = (path: string) => {
-      router.replace(path);
+      window.location.href = path;
     };
 
     (async () => {
       if (errorDescription) {
+        console.error("[auth/callback] error_description in query:", errorDescription);
         finish("/login?error=invalid_link");
         return;
       }
@@ -32,6 +32,7 @@ export function CallbackClient() {
       if (code) {
         const { error } = await supabase.auth.exchangeCodeForSession(code);
         if (error) {
+          console.error("[auth/callback] exchangeCodeForSession failed:", error);
           finish("/login?error=invalid_link");
           return;
         }
@@ -47,6 +48,7 @@ export function CallbackClient() {
         const hashError = params.get("error_description");
 
         if (hashError) {
+          console.error("[auth/callback] error_description in hash:", hashError);
           finish("/login?error=invalid_link");
           return;
         }
@@ -57,20 +59,24 @@ export function CallbackClient() {
             refresh_token: refreshToken,
           });
           if (error) {
+            console.error("[auth/callback] setSession failed:", error);
             finish("/login?error=invalid_link");
             return;
-          }
-          if (typeof window !== "undefined") {
-            window.history.replaceState(null, "", window.location.pathname);
           }
           finish(next);
           return;
         }
+
+        console.error("[auth/callback] hash missing access_token or refresh_token", {
+          hasAccessToken: !!accessToken,
+          hasRefreshToken: !!refreshToken,
+        });
       }
 
+      console.error("[auth/callback] no code, no valid hash — cannot process callback");
       finish("/login?error=invalid_link");
     })();
-  }, [router, searchParams]);
+  }, [searchParams]);
 
   return null;
 }
