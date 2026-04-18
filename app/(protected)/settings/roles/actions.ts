@@ -33,7 +33,7 @@ export async function inviteUserAction(input: {
   }
 
   const siteUrl = getSiteUrl();
-  const redirectTo = `${siteUrl}/auth/callback?next=/accept-invite`;
+  const redirectTo = `${siteUrl}/auth/callback`;
 
   const { data, error } = await supabaseAdmin.auth.admin.generateLink({
     type: "invite",
