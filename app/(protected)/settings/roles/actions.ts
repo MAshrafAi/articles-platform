@@ -48,7 +48,7 @@ export async function inviteUserAction(input: {
     options: { redirectTo },
   });
 
-  if (error || !data.user || !data.properties?.action_link) {
+  if (error || !data.user || !data.properties?.hashed_token) {
     console.error("[inviteUserAction] generateLink failed:", {
       email,
       status: error?.status,
@@ -83,8 +83,12 @@ export async function inviteUserAction(input: {
     return { ok: false, error: `تعذّر حفظ بيانات المستخدم: ${insertError.message}` };
   }
 
+  const inviteLink = `${siteUrl}/auth/callback?token_hash=${encodeURIComponent(
+    data.properties.hashed_token
+  )}&type=invite&next=${encodeURIComponent("/accept-invite")}`;
+
   revalidatePath("/settings/roles");
-  return { ok: true, inviteLink: data.properties.action_link, email };
+  return { ok: true, inviteLink, email };
 }
 
 export async function changeUserRoleAction(input: {
