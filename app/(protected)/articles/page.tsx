@@ -79,7 +79,7 @@ export default async function ArticlesPage({
   void preset; // used only inside filters via searchParams
 
   return (
-    <div className="mx-auto max-w-6xl px-8 py-10">
+    <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 md:py-10 lg:px-8">
       <RealtimeListener tables={["articles"]} />
       {params.error === "forbidden" && (
         <Alert className="mb-6 border-amber-200 bg-amber-50 text-amber-900">
@@ -90,9 +90,9 @@ export default async function ArticlesPage({
         </Alert>
       )}
 
-      <header className="mb-8 flex items-start justify-between gap-4">
+      <header className="mb-6 flex flex-col items-start justify-between gap-4 sm:mb-8 sm:flex-row sm:items-start">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">المقالات</h1>
+          <h1 className="text-xl font-semibold text-slate-900 sm:text-2xl">المقالات</h1>
           <p className="mt-1 text-sm text-slate-500">
             {current.role === "admin"
               ? "عرض وإدارة كل المقالات المنشورة على المنصة"

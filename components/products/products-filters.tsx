@@ -66,7 +66,7 @@ export function ProductsFilters({ showAuthorFilter, authorsList }: ProductsFilte
   return (
     <div className="mb-6 flex flex-wrap items-center gap-3">
       {/* Search */}
-      <div className="relative min-w-[220px] flex-1 sm:flex-initial">
+      <div className="relative w-full flex-1 sm:w-auto sm:min-w-[220px]">
         <Search className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
         <Input
           value={query}
@@ -79,7 +79,7 @@ export function ProductsFilters({ showAuthorFilter, authorsList }: ProductsFilte
       {/* Author filter (admin only) */}
       {showAuthorFilter && (
         <Select value={currentAuthor} onValueChange={(v) => updateParams({ author: v === "all" ? null : v })}>
-          <SelectTrigger className="min-w-[180px]">
+          <SelectTrigger className="w-full sm:w-auto sm:min-w-[180px]">
             <SelectValue placeholder="الناشر" />
           </SelectTrigger>
           <SelectContent dir="rtl">

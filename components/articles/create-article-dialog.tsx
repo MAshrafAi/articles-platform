@@ -198,7 +198,7 @@ export function CreateArticleDialog() {
             </DialogDescription>
           </DialogHeader>
 
-          <div className="grid gap-3 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <TypeOption
               type="informational"
               icon={<FileText className="h-6 w-6" />}
@@ -239,7 +239,7 @@ export function CreateArticleDialog() {
 
       {/* ── Step 2a: Informational article form ─────────────────────────────── */}
       {step === "informational-form" && (
-        <DialogContent dir="rtl" className="sm:max-w-xl max-h-[90vh] overflow-y-auto">
+        <DialogContent dir="rtl" className="sm:max-w-xl">
           <DialogHeader className="text-start sm:text-start">
             <DialogTitle>كتابة مقال</DialogTitle>
             <DialogDescription>أدخل تفاصيل المقال</DialogDescription>
@@ -248,7 +248,7 @@ export function CreateArticleDialog() {
           <form onSubmit={informationalForm.handleSubmit(onSubmitInformational)} noValidate>
             <div className="flex flex-col gap-5 py-1">
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <FormField label="اللغة" required error={informationalForm.formState.errors.language?.message}>
                   <Select
                     onValueChange={(v) => informationalForm.setValue("language", v, { shouldValidate: true })}
@@ -359,7 +359,7 @@ export function CreateArticleDialog() {
 
       {/* ── Step 2b: Product article form ───────────────────────────────────── */}
       {step === "product-form" && (
-        <DialogContent dir="rtl" className="sm:max-w-xl max-h-[90vh] overflow-y-auto">
+        <DialogContent dir="rtl" className="sm:max-w-xl">
           <DialogHeader className="text-start sm:text-start">
             <DialogTitle>كتابة مقال</DialogTitle>
             <DialogDescription>أدخل تفاصيل المقال وروابط المنتجات</DialogDescription>
@@ -368,7 +368,7 @@ export function CreateArticleDialog() {
           <form onSubmit={productForm.handleSubmit(onSubmitProduct)} noValidate>
             <div className="flex flex-col gap-5 py-1">
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <FormField label="اللغة" required error={productForm.formState.errors.language?.message}>
                   <Select
                     onValueChange={(v) => productForm.setValue("language", v, { shouldValidate: true })}

@@ -10,6 +10,7 @@ import {
   ScrollText,
   ShieldCheck,
   ShoppingBag,
+  X,
   type LucideIcon,
 } from "lucide-react";
 
@@ -32,9 +33,11 @@ interface NavGroup {
 
 interface SidebarProps {
   user: AppUser;
+  mobileOpen?: boolean;
+  onMobileClose?: () => void;
 }
 
-export function Sidebar({ user }: SidebarProps) {
+export function Sidebar({ user, mobileOpen = false, onMobileClose }: SidebarProps) {
   const pathname = usePathname();
   const isAdmin = user.role === "admin";
 
@@ -65,15 +68,30 @@ export function Sidebar({ user }: SidebarProps) {
   }
 
   return (
-    <aside className="flex h-screen w-[272px] shrink-0 flex-col border-l border-slate-200 bg-white">
-      <div className="flex items-center gap-3 px-6 py-5">
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-900">
-          <span className="text-base font-bold text-white">م</span>
+    <aside
+      className={cn(
+        "fixed inset-y-0 right-0 z-50 flex h-screen w-[280px] max-w-[85vw] shrink-0 flex-col border-l border-slate-200 bg-white transition-transform duration-300 ease-out lg:sticky lg:top-0 lg:z-auto lg:w-[272px] lg:max-w-none lg:translate-x-0 lg:transition-none",
+        mobileOpen ? "translate-x-0 shadow-2xl" : "translate-x-full"
+      )}
+    >
+      <div className="flex items-center justify-between gap-3 px-6 py-5">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-900">
+            <span className="text-base font-bold text-white">م</span>
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-slate-900">منصة محتوى</p>
+            <p className="text-xs text-slate-500">لوحة الإدارة</p>
+          </div>
         </div>
-        <div>
-          <p className="text-sm font-semibold text-slate-900">منصة محتوى</p>
-          <p className="text-xs text-slate-500">لوحة الإدارة</p>
-        </div>
+        <button
+          type="button"
+          onClick={onMobileClose}
+          className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900 lg:hidden"
+          aria-label="إغلاق القائمة"
+        >
+          <X className="h-5 w-5" />
+        </button>
       </div>
 
       <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4">

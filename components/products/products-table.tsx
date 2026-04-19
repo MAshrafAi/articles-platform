@@ -48,8 +48,8 @@ export function ProductsTable({
   }
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
-      <Table>
+    <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white">
+      <Table className="min-w-[640px]">
         <TableHeader>
           <TableRow className="bg-slate-50 hover:bg-slate-50">
             <TableHead className="text-start text-slate-600">العنوان</TableHead>

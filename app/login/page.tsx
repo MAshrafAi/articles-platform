@@ -9,9 +9,9 @@ export default function LoginPage() {
         <div className="absolute bottom-0 right-0 h-[360px] w-[360px] translate-x-1/3 translate-y-1/3 rounded-full bg-gradient-to-tl from-sky-100 via-sky-50 to-transparent blur-3xl" />
       </div>
 
-      <div className="flex min-h-screen items-center justify-center px-6 py-12">
+      <div className="flex min-h-screen items-center justify-center px-4 py-10 sm:px-6 sm:py-12">
         <div className="w-full max-w-[420px]">
-          <div className="mb-10 text-center">
+          <div className="mb-8 text-center sm:mb-10">
             <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-900 shadow-sm">
               <span className="text-xl font-bold text-white">م</span>
             </div>
@@ -23,7 +23,7 @@ export default function LoginPage() {
             </p>
           </div>
 
-          <div className="rounded-2xl border border-slate-200 bg-white p-7 shadow-sm">
+          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7">
             <Suspense fallback={null}>
               <LoginForm />
             </Suspense>

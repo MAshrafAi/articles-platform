@@ -63,10 +63,10 @@ export default async function LogsPage({
   const authorsList = usersData ?? [];
 
   return (
-    <div className="mx-auto max-w-6xl px-8 py-10">
+    <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 md:py-10 lg:px-8">
       <RealtimeListener tables={["articles", "products"]} />
-      <header className="mb-8">
-        <h1 className="text-2xl font-semibold text-slate-900">السجل</h1>
+      <header className="mb-6 sm:mb-8">
+        <h1 className="text-xl font-semibold text-slate-900 sm:text-2xl">السجل</h1>
         <p className="mt-1 text-sm text-slate-500">
           متابعة حالة توليد المقالات والمنتجات ومراحل سير عملهم
         </p>

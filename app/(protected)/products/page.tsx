@@ -66,11 +66,11 @@ export default async function ProductsPage({
   }
 
   return (
-    <div className="mx-auto max-w-6xl px-8 py-10">
+    <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 md:py-10 lg:px-8">
       <RealtimeListener tables={["products"]} />
-      <header className="mb-8 flex items-start justify-between gap-4">
+      <header className="mb-6 flex flex-col items-start justify-between gap-4 sm:mb-8 sm:flex-row sm:items-start">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">المنتجات</h1>
+          <h1 className="text-xl font-semibold text-slate-900 sm:text-2xl">المنتجات</h1>
           <p className="mt-1 text-sm text-slate-500">
             {current.role === "admin"
               ? "عرض وإدارة كل المنتجات على المنصة"

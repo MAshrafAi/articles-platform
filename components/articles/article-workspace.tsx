@@ -91,7 +91,7 @@ export function ArticleWorkspace({
       attributes: {
         dir: "rtl",
         class:
-          "prose prose-slate max-w-none min-h-[420px] px-8 py-10 focus:outline-none",
+          "prose prose-slate max-w-none min-h-[420px] px-4 py-6 focus:outline-none sm:px-6 sm:py-8 md:px-8 md:py-10",
       },
     },
     onCreate: ({ editor }) => {
@@ -166,9 +166,9 @@ export function ArticleWorkspace({
   const authorName = article.author.full_name?.trim() || article.author.email;
 
   return (
-    <div className="mx-auto max-w-5xl px-8 py-8">
+    <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6 md:px-8 md:py-8">
       {/* Top bar */}
-      <div className="mb-6 flex items-center justify-between gap-4">
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <Link
           href="/articles"
           className="inline-flex items-center gap-2 text-sm text-slate-600 transition-colors hover:text-slate-900"
@@ -224,7 +224,7 @@ export function ArticleWorkspace({
           onChange={(e) => setTitle(e.target.value)}
           placeholder="عنوان المقال"
           disabled={!canEdit}
-          className="mb-4 w-full border-0 bg-transparent px-0 text-3xl font-bold text-slate-900 placeholder:text-slate-300 focus:outline-none focus:ring-0 disabled:opacity-70"
+          className="mb-4 w-full border-0 bg-transparent px-0 text-2xl font-bold text-slate-900 placeholder:text-slate-300 focus:outline-none focus:ring-0 disabled:opacity-70 sm:text-3xl"
         />
 
         {/* Save status + word count */}

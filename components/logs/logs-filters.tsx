@@ -53,7 +53,7 @@ export function LogsFilters({ authorsList, showTypeFilter = true }: LogsFiltersP
           updateParams({ status: v === "all" ? null : v })
         }
       >
-        <SelectTrigger dir="rtl" className="w-[150px]">
+        <SelectTrigger dir="rtl" className="w-full sm:w-[150px]">
           <SelectValue />
         </SelectTrigger>
         <SelectContent dir="rtl">
@@ -72,7 +72,7 @@ export function LogsFilters({ authorsList, showTypeFilter = true }: LogsFiltersP
             updateParams({ type: v === "all" ? null : v })
           }
         >
-          <SelectTrigger dir="rtl" className="w-[150px]">
+          <SelectTrigger dir="rtl" className="w-full sm:w-[150px]">
             <SelectValue />
           </SelectTrigger>
           <SelectContent dir="rtl">
@@ -90,7 +90,7 @@ export function LogsFilters({ authorsList, showTypeFilter = true }: LogsFiltersP
           updateParams({ author: v === "all" ? null : v })
         }
       >
-        <SelectTrigger dir="rtl" className="w-[180px]">
+        <SelectTrigger dir="rtl" className="w-full sm:w-[180px]">
           <SelectValue />
         </SelectTrigger>
         <SelectContent dir="rtl">

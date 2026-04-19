@@ -94,7 +94,7 @@ export function CreateProductDialog() {
         تحسين منتج
       </DialogTrigger>
 
-      <DialogContent dir="rtl" className="sm:max-w-xl max-h-[90vh] overflow-y-auto">
+      <DialogContent dir="rtl" className="sm:max-w-xl">
         <DialogHeader className="text-start sm:text-start">
           <DialogTitle>إعداد المنتجات</DialogTitle>
           <DialogDescription>أدخل تفاصيل المنتج لبدء التحسين</DialogDescription>

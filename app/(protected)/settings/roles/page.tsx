@@ -27,10 +27,10 @@ export default async function RolesPage() {
   const users = (data ?? []) as AppUser[];
 
   return (
-    <div className="mx-auto max-w-6xl px-8 py-10">
-      <header className="mb-8 flex items-start justify-between gap-4">
+    <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 md:py-10 lg:px-8">
+      <header className="mb-6 flex flex-col items-start justify-between gap-4 sm:mb-8 sm:flex-row sm:items-start">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">
+          <h1 className="text-xl font-semibold text-slate-900 sm:text-2xl">
             أدوار المنصة
           </h1>
           <p className="mt-1 text-sm text-slate-500">
@@ -40,8 +40,8 @@ export default async function RolesPage() {
         <InviteDialog />
       </header>
 
-      <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
-        <Table>
+      <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white">
+        <Table className="min-w-[640px]">
           <TableHeader>
             <TableRow className="bg-slate-50 hover:bg-slate-50">
               <TableHead className="text-start text-slate-600">الاسم</TableHead>

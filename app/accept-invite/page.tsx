@@ -32,9 +32,9 @@ export default async function AcceptInvitePage() {
         <div className="absolute left-1/2 top-0 h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-gradient-to-br from-slate-200 via-slate-100 to-transparent blur-3xl" />
       </div>
 
-      <div className="flex min-h-screen items-center justify-center px-6 py-12">
+      <div className="flex min-h-screen items-center justify-center px-4 py-10 sm:px-6 sm:py-12">
         <div className="w-full max-w-[460px]">
-          <div className="mb-8 text-center">
+          <div className="mb-6 text-center sm:mb-8">
             <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-900 shadow-sm">
               <span className="text-xl font-bold text-white">م</span>
             </div>
@@ -46,7 +46,7 @@ export default async function AcceptInvitePage() {
             </p>
           </div>
 
-          <div className="rounded-2xl border border-slate-200 bg-white p-7 shadow-sm">
+          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7">
             <div className="mb-6 space-y-2">
               <div className="flex items-center justify-between">
                 <label className="text-sm font-medium text-slate-700">
