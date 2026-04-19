@@ -1,6 +1,8 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import type { EmailOtpType } from "@supabase/supabase-js";
-import { createClient } from "@/lib/supabase/server";
+
+type CookieToSet = { name: string; value: string; options?: CookieOptions };
 
 const ALLOWED_TYPES: EmailOtpType[] = [
   "invite",
@@ -27,7 +29,31 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(`${origin}/login?error=invalid_link`);
   }
 
-  const supabase = await createClient();
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!supabaseUrl || !supabaseAnonKey) {
+    throw new Error("Missing Supabase env vars");
+  }
+
+  let response = NextResponse.redirect(`${origin}${safeNext}`);
+
+  const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
+    cookies: {
+      getAll() {
+        return request.cookies.getAll();
+      },
+      setAll(cookiesToSet: CookieToSet[]) {
+        cookiesToSet.forEach(({ name, value }) =>
+          request.cookies.set(name, value)
+        );
+        response = NextResponse.redirect(`${origin}${safeNext}`);
+        cookiesToSet.forEach(({ name, value, options }) =>
+          response.cookies.set(name, value, options)
+        );
+      },
+    },
+  });
+
   const { error } = await supabase.auth.verifyOtp({
     token_hash: tokenHash,
     type: rawType as EmailOtpType,
@@ -42,5 +68,5 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(`${origin}/login?error=invalid_link`);
   }
 
-  return NextResponse.redirect(`${origin}${safeNext}`);
+  return response;
 }
