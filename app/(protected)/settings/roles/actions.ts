@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { requireAdmin, type UserRole } from "@/lib/auth";
@@ -10,8 +11,14 @@ export type InviteResult =
   | { ok: true; inviteLink: string; email: string }
   | { ok: false; error: string };
 
-function getSiteUrl(): string {
+async function getSiteUrl(): Promise<string> {
   if (process.env.NEXT_PUBLIC_SITE_URL) return process.env.NEXT_PUBLIC_SITE_URL;
+  const h = await headers();
+  const host = h.get("x-forwarded-host") ?? h.get("host");
+  if (host) {
+    const proto = h.get("x-forwarded-proto") ?? (host.startsWith("localhost") ? "http" : "https");
+    return `${proto}://${host}`;
+  }
   if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
   return "http://localhost:3000";
 }
@@ -32,7 +39,7 @@ export async function inviteUserAction(input: {
     return { ok: false, error: "دور غير مدعوم" };
   }
 
-  const siteUrl = getSiteUrl();
+  const siteUrl = await getSiteUrl();
   const redirectTo = `${siteUrl}/auth/callback`;
 
   const { data, error } = await supabaseAdmin.auth.admin.generateLink({

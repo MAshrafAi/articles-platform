@@ -18,7 +18,11 @@
       "Bash(npm i *)",
       "Bash(npx shadcn@latest add popover calendar toggle -y)",
       "Bash(npx skills *)",
-      "Bash(npx wrangler *)"
+      "Bash(npx wrangler *)",
+      "Bash(python3 -c ' *)",
+      "Bash(python3)",
+      "mcp__supabase__execute_sql",
+      "mcp__supabase__get_logs"
     ]
   },
   "enableAllProjectMcpServers": true,
