@@ -3,7 +3,13 @@ import { NextResponse, type NextRequest } from "next/server";
 
 type CookieToSet = { name: string; value: string; options?: CookieOptions };
 
-const PUBLIC_PATHS = ["/login", "/accept-invite", "/auth/callback", "/auth/signout"];
+const PUBLIC_PATHS = [
+  "/login",
+  "/accept-invite",
+  "/auth/callback",
+  "/auth/signout",
+  "/Introduction-to-project",
+];
 const ADMIN_PATHS = ["/settings/roles", "/settings/logs"];
 
 export async function updateSession(request: NextRequest) {
