@@ -10,7 +10,7 @@ const PUBLIC_PATHS = [
   "/auth/signout",
   "/Introduction-to-project",
 ];
-const ADMIN_PATHS = ["/settings/roles", "/settings/logs"];
+const ADMIN_PATHS = ["/settings/roles", "/settings/logs", "/settings/prompts"];
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });

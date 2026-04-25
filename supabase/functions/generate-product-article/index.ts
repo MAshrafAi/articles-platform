@@ -1,12 +1,27 @@
 import { createClient } from "jsr:@supabase/supabase-js@2";
-import { PRODUCT_SEARCH_QUERIES_SYSTEM } from "../prompts/product-search-queries.ts";
-import { PRODUCT_OUTLINE_SYSTEM } from "../prompts/product-outline.ts";
-import { PRODUCT_VISION_SYSTEM } from "../prompts/product-vision.ts";
+import {
+  PRODUCT_SEARCH_QUERIES_EDITABLE_DEFAULT,
+  PRODUCT_SEARCH_QUERIES_STRUCTURAL,
+} from "../prompts/product-search-queries.ts";
+import {
+  PRODUCT_OUTLINE_EDITABLE_DEFAULT,
+  PRODUCT_OUTLINE_STRUCTURAL,
+} from "../prompts/product-outline.ts";
+import {
+  PRODUCT_VISION_EDITABLE_DEFAULT,
+  PRODUCT_VISION_STRUCTURAL,
+} from "../prompts/product-vision.ts";
 import {
   buildWriterSystem,
   buildAudienceInstruction,
   buildToneInstruction,
+  WRITER_EDITABLE_DEFAULT,
 } from "../prompts/writer.ts";
+import {
+  RESEARCH_EDITABLE_DEFAULT,
+  RESEARCH_STRUCTURAL,
+} from "../prompts/research.ts";
+import { fetchPrompt } from "../utils/fetch-prompt.ts";
 import { markdownToTipTap } from "../utils/markdown-to-tiptap.ts";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -322,6 +337,30 @@ Deno.serve(async (req: Request) => {
     const articleTitle = title?.trim() || KW;
     const lang = language === "en" ? "English" : "Arabic";
 
+    // ── 0. Fetch all editable prompts from DB in parallel ────────────────────
+    const [
+      productVisionEditable,
+      productSearchQueriesEditable,
+      productOutlineEditable,
+      writerEditable,
+      researchEditable,
+    ] = await Promise.all([
+      fetchPrompt(supabase, "product_vision_article", PRODUCT_VISION_EDITABLE_DEFAULT),
+      fetchPrompt(
+        supabase,
+        "product_search_queries",
+        PRODUCT_SEARCH_QUERIES_EDITABLE_DEFAULT
+      ),
+      fetchPrompt(supabase, "product_outline", PRODUCT_OUTLINE_EDITABLE_DEFAULT),
+      fetchPrompt(supabase, "writer_product", WRITER_EDITABLE_DEFAULT),
+      fetchPrompt(supabase, "research_product", RESEARCH_EDITABLE_DEFAULT),
+    ]);
+
+    const productVisionSystem = `${productVisionEditable}\n\n${PRODUCT_VISION_STRUCTURAL}`;
+    const productSearchQueriesSystem = `${productSearchQueriesEditable}\n\n${PRODUCT_SEARCH_QUERIES_STRUCTURAL}`;
+    const productOutlineSystem = `${productOutlineEditable}\n\n${PRODUCT_OUTLINE_STRUCTURAL}`;
+    const researchSystem = `${researchEditable}\n\n${RESEARCH_STRUCTURAL}`;
+
     // ── 1. Product analysis pipeline ─────────────────────────────────────────
     console.log(`[Product] Analyzing ${links.length} product link(s)...`);
 
@@ -356,7 +395,7 @@ Deno.serve(async (req: Request) => {
               const visionUserText = `Please write in ${lang}.\n\nMore info about the product:\n\n${scrapedText}`;
               visionAnalysis = await openAIVisionChat(
                 OPENAI_KEY,
-                PRODUCT_VISION_SYSTEM,
+                productVisionSystem,
                 visionUserText,
                 signedUrlData.signedUrl
               );
@@ -387,7 +426,7 @@ Deno.serve(async (req: Request) => {
         OPENAI_KEY,
         "gpt-5-chat-latest",
         [
-          { role: "system", content: PRODUCT_SEARCH_QUERIES_SYSTEM },
+          { role: "system", content: productSearchQueriesSystem },
           {
             role: "user",
             content: `Keyword:\n${KW}\n\nArticle's Title:\n${articleTitle}\n\nNotes:\n${infoNotes || "none"}\n\nProducts will mention in the article:\n${productAnalysisText}\n\nPlease Respond only in ${lang}.`,
@@ -405,6 +444,7 @@ Deno.serve(async (req: Request) => {
     const searchResults = await Promise.all(
       queries.map((q) =>
         openRouterChat(OPENROUTER_KEY, "perplexity/sonar-pro", [
+          { role: "system", content: researchSystem },
           { role: "user", content: q },
         ])
       )
@@ -425,7 +465,7 @@ Deno.serve(async (req: Request) => {
       OPENAI_KEY,
       "gpt-4.1",
       [
-        { role: "system", content: PRODUCT_OUTLINE_SYSTEM },
+        { role: "system", content: productOutlineSystem },
         {
           role: "user",
           content: `Keyword:\n${KW}\n\nArticle's Title:\n${articleTitle}\n\nSome info To use:\n\n${aggregatedInfo}\n\nProducts That should include in the outline:\n${productAnalysisText}\n\nNotes:\n${outlineNotes || "none"}\n\nSome Q&A to use in FAQs (use the question title as written):\n${faqText}\n⚠️ FAQ IMPORTANT INSTRUCTIONS:\n- Only answer questions that are directly relevant to the article's topic.\n- DO NOT include promotional content or refer to products, services, or brands not mentioned in the article.\n- Keep the answers informative, concise, and neutral in tone.`,
@@ -442,6 +482,7 @@ Deno.serve(async (req: Request) => {
     // ── 6. Write all sections in parallel ────────────────────────────────────
     currentStep = "writing";
     const writerSystem = buildWriterSystem(
+      writerEditable,
       writingNotes || "none",
       audienceInstruction
     );

@@ -1,4 +1,9 @@
-export const PRODUCT_SEO_SYSTEM = `Role: You are an SEO Copywriter specializing in writing optimized meta content for product pages.
+// ═══════════════════════════════════════════════════════════════════════════
+// EDITABLE — admin-editable from /settings/prompts.
+// The Edge Function reads editable_content from public.prompts at runtime;
+// this constant is only the seed/fallback default.
+// ═══════════════════════════════════════════════════════════════════════════
+export const PRODUCT_SEO_EDITABLE_DEFAULT = `Role: You are an SEO Copywriter specializing in writing optimized meta content for product pages.
 
 Task 1: Meta Title Generation
 Your task is to create a meta title for a product page using the provided keyword(s). The meta title must:
@@ -33,8 +38,15 @@ Generate image alt texts (≤70 characters each) for seven images in Arabic. The
 - Each MUST include The main KW.
 
 Task 4: SEO Keyword Tags
-Provide eight relevant Arabic keyword tags optimized for the product page.
+Provide eight relevant Arabic keyword tags optimized for the product page.`;
 
-Format the output using clean Markdown:
+// ═══════════════════════════════════════════════════════════════════════════
+// STRUCTURAL — DO NOT EDIT FROM ANY UI.
+// Frozen output contract (markdown formatting rules). The Edge Function
+// appends this to the editable part at runtime.
+// ═══════════════════════════════════════════════════════════════════════════
+export const PRODUCT_SEO_STRUCTURAL = `Format the output using clean Markdown:
 
 \`##\` for H2 headings, \`**bold**\` for emphasis, \`-\` for bullet points, \`1.\` for numbered lists.`;
+
+export const PRODUCT_SEO_SYSTEM = `${PRODUCT_SEO_EDITABLE_DEFAULT}\n\n${PRODUCT_SEO_STRUCTURAL}`;

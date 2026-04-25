@@ -1,9 +1,10 @@
-/**
- * Returns the writer system prompt with writing notes injected.
- * The audience_form instruction is passed separately as part of the system prompt.
- */
-export function buildWriterSystem(writingNotes: string, audienceInstruction: string): string {
-  return `You are a professional Arabic content writer.
+// ═══════════════════════════════════════════════════════════════════════════
+// EDITABLE — admin-editable from /settings/prompts.
+// Seeds TWO independent DB rows: writer_informational + writer_product.
+// Each Edge Function fetches its own key; both fall back to this default
+// only if the DB read fails.
+// ═══════════════════════════════════════════════════════════════════════════
+export const WRITER_EDITABLE_DEFAULT = `You are a professional Arabic content writer.
 
 Your task is to write a complete article section based on:
 
@@ -31,7 +32,6 @@ Follow the instructions below carefully.
 
 ### Tone & Style Guidelines
 
-- ${audienceInstruction}
 - Keep the tone natural, human.
 - You are allowed to express the information using rich, natural language, but only using the facts and details provided. Do not create new ideas or reframe the intent.
 - Avoid overly technical, dry, or formal language.
@@ -44,17 +44,14 @@ Follow the instructions below carefully.
 - Avoid wordiness or unnecessary repetition — every sentence must deliver clear, meaningful content.
 - Do not use filler language or vague expressions that add no real value.
 - Do not oversimplify in a way that reduces the accuracy or depth of the information — maintain a balance between clarity and substance.
-- Write In Arabic.
+- Write In Arabic.`;
 
----
-
-### **Writing Notes**
-
-${writingNotes || 'none'}
-
----
-
-### **Hard Restrictions**
+// ═══════════════════════════════════════════════════════════════════════════
+// STRUCTURAL — DO NOT EDIT FROM ANY UI.
+// Frozen output contract (markdown rules + hard restrictions). buildWriterSystem
+// appends this after the editable block + per-article runtime values.
+// ═══════════════════════════════════════════════════════════════════════════
+export const WRITER_STRUCTURAL = `### **Hard Restrictions**
 
 - Do **not** add any information that isn't included in the provided data.
 - Do **not** create fake references, data, or quotes.
@@ -66,6 +63,34 @@ ${writingNotes || 'none'}
 Format the output using a clean Markdown structure. Use clean Markdown:
 
 \`#\` for H1, \`##\` for H2,..etc, \`-\` for bullets, \`1.\` for numbered lists, \`**bold**\` for emphasis, and line breaks between items.`;
+
+// ═══════════════════════════════════════════════════════════════════════════
+// HELPERS — runtime-only inputs (per-article), not stored in DB.
+// `editableContent` comes from the DB (falls back to WRITER_EDITABLE_DEFAULT).
+// `audienceInstruction` / `writingNotes` are derived from the request payload
+// (gender, tone, user-supplied notes) — kept outside the editable block so
+// admin edits cannot accidentally delete them.
+// ═══════════════════════════════════════════════════════════════════════════
+export function buildWriterSystem(
+  editableContent: string,
+  writingNotes: string,
+  audienceInstruction: string
+): string {
+  return `${editableContent}
+
+### Audience
+
+${audienceInstruction}
+
+---
+
+### **Writing Notes**
+
+${writingNotes || "none"}
+
+---
+
+${WRITER_STRUCTURAL}`;
 }
 
 /** Maps the audienceGender field value to an instruction string */

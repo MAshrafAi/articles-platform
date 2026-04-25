@@ -10,6 +10,7 @@ import {
   ScrollText,
   ShieldCheck,
   ShoppingBag,
+  Sparkles,
   X,
   type LucideIcon,
 } from "lucide-react";
@@ -59,6 +60,11 @@ export function Sidebar({ user, mobileOpen = false, onMobileClose }: SidebarProp
       label: "أدوار المنصة",
       href: "/settings/roles",
       icon: ShieldCheck,
+    });
+    settingsChildren.push({
+      label: "البرومتات",
+      href: "/settings/prompts",
+      icon: Sparkles,
     });
     settingsChildren.push({
       label: "السجل",

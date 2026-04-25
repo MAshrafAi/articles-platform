@@ -1,11 +1,23 @@
 import { createClient } from "jsr:@supabase/supabase-js@2";
-import { SEARCH_QUERIES_SYSTEM } from "../prompts/search-queries.ts";
-import { OUTLINE_SYSTEM } from "../prompts/outline.ts";
+import {
+  SEARCH_QUERIES_EDITABLE_DEFAULT,
+  SEARCH_QUERIES_STRUCTURAL,
+} from "../prompts/search-queries.ts";
+import {
+  OUTLINE_EDITABLE_DEFAULT,
+  OUTLINE_STRUCTURAL,
+} from "../prompts/outline.ts";
 import {
   buildWriterSystem,
   buildAudienceInstruction,
   buildToneInstruction,
+  WRITER_EDITABLE_DEFAULT,
 } from "../prompts/writer.ts";
+import {
+  RESEARCH_EDITABLE_DEFAULT,
+  RESEARCH_STRUCTURAL,
+} from "../prompts/research.ts";
+import { fetchPrompt } from "../utils/fetch-prompt.ts";
 import { markdownToTipTap } from "../utils/markdown-to-tiptap.ts";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -209,9 +221,21 @@ Deno.serve(async (req: Request) => {
 
     const articleTitle = title?.trim() || KW;
 
-    // ── 1. Build prompt vars ─────────────────────────────────────────────────
+    // ── 1. Build prompt vars + fetch editable prompts from DB ─────────────────
     const audienceInstruction = buildAudienceInstruction(audienceGender);
     const toneInstruction = buildToneInstruction(writingTone);
+
+    const [searchQueriesEditable, outlineEditable, writerEditable, researchEditable] =
+      await Promise.all([
+        fetchPrompt(supabase, "search_queries", SEARCH_QUERIES_EDITABLE_DEFAULT),
+        fetchPrompt(supabase, "outline", OUTLINE_EDITABLE_DEFAULT),
+        fetchPrompt(supabase, "writer_informational", WRITER_EDITABLE_DEFAULT),
+        fetchPrompt(supabase, "research_informational", RESEARCH_EDITABLE_DEFAULT),
+      ]);
+
+    const searchQueriesSystem = `${searchQueriesEditable}\n\n${SEARCH_QUERIES_STRUCTURAL}`;
+    const outlineSystem = `${outlineEditable}\n\n${OUTLINE_STRUCTURAL}`;
+    const researchSystem = `${researchEditable}\n\n${RESEARCH_STRUCTURAL}`;
 
     // ── 2. Generate 3 search queries + PAA in parallel ───────────────────────
     const [queriesRaw, paaItems] = await Promise.all([
@@ -219,7 +243,7 @@ Deno.serve(async (req: Request) => {
         OPENAI_KEY,
         "gpt-5-chat-latest",
         [
-          { role: "system", content: SEARCH_QUERIES_SYSTEM },
+          { role: "system", content: searchQueriesSystem },
           {
             role: "user",
             content: `Keyword:\n${KW}\n\nArticle's Title:\n${articleTitle}\n\nNotes:\n${infoNotes || "none"}\n\nPlease Respond only in Arabic.`,
@@ -237,6 +261,7 @@ Deno.serve(async (req: Request) => {
     const searchResults = await Promise.all(
       queries.map((q) =>
         openRouterChat(OPENROUTER_KEY, "perplexity/sonar-pro", [
+          { role: "system", content: researchSystem },
           { role: "user", content: q },
         ])
       )
@@ -257,7 +282,7 @@ Deno.serve(async (req: Request) => {
       OPENAI_KEY,
       "gpt-4.1",
       [
-        { role: "system", content: OUTLINE_SYSTEM },
+        { role: "system", content: outlineSystem },
         {
           role: "user",
           content: `Keyword:\n${KW}\n\nArticle's Title:\n${articleTitle}\n\nSome info To use:\n\n${aggregatedInfo}\n\nSome Q&A to use in FAQs (use the question title as written):\n${faqText}\n\nNotes:\n${outlineNotes || "none"}`,
@@ -274,6 +299,7 @@ Deno.serve(async (req: Request) => {
     // ── 5. Write all sections in parallel ────────────────────────────────────
     currentStep = "writing";
     const writerSystem = buildWriterSystem(
+      writerEditable,
       writingNotes || "none",
       audienceInstruction
     );

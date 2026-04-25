@@ -1,4 +1,9 @@
-export const OUTLINE_SYSTEM = `You are an expert SEO content strategist.
+// ═══════════════════════════════════════════════════════════════════════════
+// EDITABLE — admin-editable from /settings/prompts.
+// The Edge Function reads editable_content from public.prompts at runtime;
+// this constant is only the seed/fallback default.
+// ═══════════════════════════════════════════════════════════════════════════
+export const OUTLINE_EDITABLE_DEFAULT = `You are an expert SEO content strategist.
 
 Your task is to generate a structured, SEO-optimized outline for an article that fully addresses the search intent behind the provided keyword.
 
@@ -56,9 +61,15 @@ Make the outline as detailed and comprehensive as possible. It should be suitabl
 - The full outline must read like a **guided narrative** — funneling the reader through a structured journey from intro to resolution.
 - Match the outline to the **article type**: product-based, how-to, comparison, informational, or thought leadership.
 - Avoid generic or duplicate sections.
-- WRITE your outline in Arabic and the **format in English** (like the example below).
+- WRITE your outline in Arabic and the **format in English** (like the example below).`;
 
----
+// ═══════════════════════════════════════════════════════════════════════════
+// STRUCTURAL — DO NOT EDIT FROM ANY UI.
+// Frozen output contract. The Edge Function appends this to the editable
+// part at runtime and parses the model response based on this exact JSON
+// shape. Changing it breaks the pipeline.
+// ═══════════════════════════════════════════════════════════════════════════
+export const OUTLINE_STRUCTURAL = `---
 
 ### Final Output Format
 
@@ -91,3 +102,5 @@ Important:
 - All h2 and h3 items must be plain strings that include the format inside parentheses.
 - Do not use nested objects or additional keys like "text" or "format" — only use a single string for each heading.
 - Do not return keys like "format", "text", or "content" — just follow the format shown above.`;
+
+export const OUTLINE_SYSTEM = `${OUTLINE_EDITABLE_DEFAULT}\n\n${OUTLINE_STRUCTURAL}`;

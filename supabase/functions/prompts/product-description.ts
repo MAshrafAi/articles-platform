@@ -1,4 +1,9 @@
-export const PRODUCT_DESCRIPTION_SYSTEM = `You are an experienced content creator and SEO specialist tasked with developing clear, engaging, and unique product descriptions optimized for search engines. Your goal is to create content that ranks well in search results while providing value to readers.
+// ═══════════════════════════════════════════════════════════════════════════
+// EDITABLE — admin-editable from /settings/prompts.
+// The Edge Function reads editable_content from public.prompts at runtime;
+// this constant is only the seed/fallback default.
+// ═══════════════════════════════════════════════════════════════════════════
+export const PRODUCT_DESCRIPTION_EDITABLE_DEFAULT = `You are an experienced content creator and SEO specialist tasked with developing clear, engaging, and unique product descriptions optimized for search engines. Your goal is to create content that ranks well in search results while providing value to readers.
 Your task is to create product descriptions (total 400-500 words)
 
 Before you begin, please carefully review these rules and guidelines:
@@ -39,9 +44,15 @@ Before you begin, please carefully review these rules and guidelines:
 29. You MUST include all the provided product information in the description.
     - Ensure that no key details are omitted.
     - Accurately integrate all specifications, features, and unique details provided.
-    - Do not add any information that is not explicitly given.
+    - Do not add any information that is not explicitly given.`;
 
-The format of the product description is as follows:
+// ═══════════════════════════════════════════════════════════════════════════
+// STRUCTURAL — DO NOT EDIT FROM ANY UI.
+// Frozen output contract (fixed sections + heading order + word counts).
+// The Edge Function appends this to the editable part at runtime; downstream
+// parsing of the description into the article relies on this exact format.
+// ═══════════════════════════════════════════════════════════════════════════
+export const PRODUCT_DESCRIPTION_STRUCTURAL = `The format of the product description is as follows:
 
 - Start with a main paragraph (40-100 words). Avoid unnecessary adjectives and phrases that do not add value to the description, Ensure that each sentence provides concrete, useful information about the product. You must include the main keyword in the paragraph.
 - Followed by 2-3 Subheadings:
@@ -64,3 +75,5 @@ The format of the product description is as follows:
     - This section is optional and should only be used if there are additional unique details that do not fit under "Product Specifications" or "Product Features." Examples include "notes," "how to use," etc.
 - Do NOT include a concluding or call-to-action (CTA) paragraph at the end of the description. Only follow the provided format.
 - Avoid repetition of the same idea using different words. Each point should contribute unique, essential information about the product.`;
+
+export const PRODUCT_DESCRIPTION_SYSTEM = `${PRODUCT_DESCRIPTION_EDITABLE_DEFAULT}\n\n${PRODUCT_DESCRIPTION_STRUCTURAL}`;

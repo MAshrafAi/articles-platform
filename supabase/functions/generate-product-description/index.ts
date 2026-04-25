@@ -1,7 +1,17 @@
 import { createClient } from "jsr:@supabase/supabase-js@2";
-import { PRODUCT_VISION_SYSTEM } from "../prompts/product-vision.ts";
-import { PRODUCT_DESCRIPTION_SYSTEM } from "../prompts/product-description.ts";
-import { PRODUCT_SEO_SYSTEM } from "../prompts/product-seo.ts";
+import {
+  PRODUCT_VISION_EDITABLE_DEFAULT,
+  PRODUCT_VISION_STRUCTURAL,
+} from "../prompts/product-vision.ts";
+import {
+  PRODUCT_DESCRIPTION_EDITABLE_DEFAULT,
+  PRODUCT_DESCRIPTION_STRUCTURAL,
+} from "../prompts/product-description.ts";
+import {
+  PRODUCT_SEO_EDITABLE_DEFAULT,
+  PRODUCT_SEO_STRUCTURAL,
+} from "../prompts/product-seo.ts";
+import { fetchPrompt } from "../utils/fetch-prompt.ts";
 import { markdownToTipTap } from "../utils/markdown-to-tiptap.ts";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -209,6 +219,25 @@ Deno.serve(async (req: Request) => {
     const DATAFORSEO_AUTH = getEnv("DATAFORSEO_AUTH");
     const APIFLASH_KEY = getEnv("APIFLASH_KEY");
 
+    // ── 0. Fetch editable prompts from DB in parallel ────────────────────────
+    const [
+      productVisionEditable,
+      productDescriptionEditable,
+      productSeoEditable,
+    ] = await Promise.all([
+      fetchPrompt(supabase, "product_vision_description", PRODUCT_VISION_EDITABLE_DEFAULT),
+      fetchPrompt(
+        supabase,
+        "product_description",
+        PRODUCT_DESCRIPTION_EDITABLE_DEFAULT
+      ),
+      fetchPrompt(supabase, "product_seo", PRODUCT_SEO_EDITABLE_DEFAULT),
+    ]);
+
+    const productVisionSystem = `${productVisionEditable}\n\n${PRODUCT_VISION_STRUCTURAL}`;
+    const productDescriptionSystem = `${productDescriptionEditable}\n\n${PRODUCT_DESCRIPTION_STRUCTURAL}`;
+    const productSeoSystem = `${productSeoEditable}\n\n${PRODUCT_SEO_STRUCTURAL}`;
+
     // ── 1. Scrape product page ───────────────────────────────────────────────
     console.log("[Product] Scraping:", productUrl);
     const scrapedText = await dataForSEOContentParsing(DATAFORSEO_AUTH, productUrl);
@@ -237,7 +266,7 @@ Deno.serve(async (req: Request) => {
           const visionUserText = `Please write in ${lang}.\n\nMore info about the product:\n\n${scrapedText}`;
           visionAnalysis = await openAIVisionChat(
             OPENAI_KEY,
-            PRODUCT_VISION_SYSTEM,
+            productVisionSystem,
             visionUserText,
             signedUrlData.signedUrl
           );
@@ -258,7 +287,7 @@ Deno.serve(async (req: Request) => {
       [
         {
           role: "system",
-          content: `${PRODUCT_DESCRIPTION_SYSTEM}\n\n30. Please Write in ${lang}`,
+          content: `${productDescriptionSystem}\n\n30. Please Write in ${lang}`,
         },
         {
           role: "user",
@@ -274,7 +303,7 @@ Deno.serve(async (req: Request) => {
       OPENAI_KEY,
       "gpt-4.1",
       [
-        { role: "system", content: PRODUCT_SEO_SYSTEM },
+        { role: "system", content: productSeoSystem },
         {
           role: "user",
           content: `Keyword:\n\n${keyword}\n\nThe Product description:\n\n${descriptionContent}\n\nPlease write in ${lang}.`,
